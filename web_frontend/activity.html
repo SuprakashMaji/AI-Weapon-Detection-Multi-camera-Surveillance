@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sentinel — Activity &amp; Heatmap Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dash-shell">
+
+  <div class="dash-top">
+    <div class="wrap">
+      <a href="index.html" class="brand"><span class="mark"></span>SENTINEL</a>
+      <ul class="nav-links" style="margin:0 auto 0 32px;">
+        <li><a href="weapon.html">Weapon &amp; Re‑ID</a></li>
+        <li><a href="activity.html" style="color:var(--green);">Activity &amp; Heatmap</a></li>
+      </ul>
+      <div class="dash-status">
+        <span class="item"><span id="apiDot" class="live-dot dim"></span><span id="apiStatus">connecting…</span></span>
+        <span class="item">SOURCES <strong id="actCount" style="color:var(--text)">0</strong></span>
+        <span class="dash-clock" id="clock">--:--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="wrap">
+
+      <div class="dash-grid">
+
+        <!-- ===================== SIDEBAR ===================== -->
+        <div>
+          <div class="panel">
+            <div class="panel-title">Add activity / heatmap source</div>
+            <form id="activityForm">
+              <div class="field">
+                <label for="aName">Source name</label>
+                <input id="aName" type="text" placeholder="e.g. atrium" required>
+              </div>
+              <div class="field">
+                <label for="aType">Source type</label>
+                <select id="aType">
+                  <option value="webcam">Webcam (device index)</option>
+                  <option value="file">Upload recorded video</option>
+                </select>
+              </div>
+              <div class="field" id="aSourceField">
+                <label for="aSource">Device index</label>
+                <input id="aSource" type="text" placeholder="0">
+              </div>
+              <div class="field" id="aFileField" style="display:none;">
+                <label for="aFile">Video file</label>
+                <input id="aFile" type="file" accept="video/*">
+              </div>
+              <button type="submit" class="btn small solid" style="width:100%;justify-content:center;">Start source</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Activity sources</div>
+            <div id="activitySourceList"><div class="empty-state">No sources running yet.</div></div>
+          </div>
+        </div>
+
+        <!-- ===================== MAIN ===================== -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div class="panel-title" style="margin-bottom:0;">Live activity &amp; heatmap feeds</div>
+            <div class="grid-size-control" id="activityGridSize">
+              <span>Sources per row</span>
+              <button type="button" class="gs-btn" data-cols="2">1</button>
+              <button type="button" class="gs-btn" data-cols="4">2</button>
+            </div>
+          </div>
+          <div class="feed-grid" id="activityFeedGrid">
+            <div class="panel"><div class="empty-state">Add a source on the left to see live activity detection and the movement heatmap here.</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script src="activity.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+outputs/live/*
+outputs/suspects/*
+outputs/temp/*
+outputs/logs/*
+outputs/weapon_activity_status/*
+outputs/activity_status/*
+uploads/*
+.env
+venv/
+.venv/
+env/
+.ipynb_checkpoints/
+*.log

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sentinel — Weapon &amp; Re‑ID Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dash-shell">
+
+  <div class="dash-top">
+    <div class="wrap">
+      <a href="index.html" class="brand"><span class="mark"></span>SENTINEL</a>
+      <ul class="nav-links" style="margin:0 auto 0 32px;">
+        <li><a href="weapon.html" style="color:var(--green);">Weapon &amp; Re‑ID</a></li>
+        <li><a href="activity.html">Activity &amp; Heatmap</a></li>
+      </ul>
+      <div class="dash-status">
+        <span class="item"><span id="apiDot" class="live-dot dim"></span><span id="apiStatus">connecting…</span></span>
+        <button id="soundToggleBtn" class="btn small" type="button" title="Toggle sound alerts">🔊 Sound: ON</button>
+        <span class="item">CAMS <strong id="camCount" style="color:var(--text)">0</strong></span>
+        <span class="dash-clock" id="clock">--:--:--</span>
+     </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="wrap">
+
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="panel kpi"><div class="num" id="kpiSuspects">0</div><div class="label">Suspects</div></div>
+        <div class="panel kpi"><div class="num" id="kpiReid">0</div><div class="label">Re‑ID matches</div></div>
+        <div class="panel kpi"><div class="num" id="kpiLogs">0</div><div class="label">Evidence logs</div></div>
+        <div class="panel kpi"><div class="num" id="kpiPistol">0</div><div class="label">Pistol cases</div></div>
+        <div class="panel kpi"><div class="num" id="kpiKnife">0</div><div class="label">Knife cases</div></div>
+        <div class="panel kpi"><div class="num" id="kpiConf">0%</div><div class="label">Avg match conf.</div></div>
+      </div>
+
+      <div class="dash-grid">
+
+        <!-- ===================== SIDEBAR ===================== -->
+        <div>
+          <div class="panel">
+            <div class="panel-title">Add weapon‑detection camera</div>
+            <form id="weaponForm">
+              <div class="field">
+                <label for="wName">Camera name <span style="opacity:.6;font-weight:400;">(prefix if multiple files)</span></label>
+                <input id="wName" type="text" placeholder="e.g. entrance" required>
+              </div>
+              <div class="field">
+                <label for="wType">Source type</label>
+                <select id="wType">
+                  <option value="webcam">Webcam (device index)</option>
+                  <option value="file">Upload recorded video</option>
+                </select>
+              </div>
+              <div class="field" id="wSourceField">
+                <label for="wSource">Device index</label>
+                <input id="wSource" type="text" placeholder="0">
+              </div>
+              <div class="field" id="wFileField" style="display:none;">
+                <label for="wFile">Video file(s) <span style="opacity:.6;font-weight:400;">— select multiple to start all at once</span></label>
+                <input id="wFile" type="file" accept="video/*" multiple>
+              </div>
+              <button type="submit" class="btn small solid" style="width:100%;justify-content:center;">Start camera(s)</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Weapon cameras</div>
+            <div id="weaponSourceList"><div class="empty-state">No cameras running yet.</div></div>
+          </div>
+        </div>
+
+        <!-- ===================== MAIN ===================== -->
+        <div>
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="weapons">Live feeds</button>
+            <button class="tab-btn" data-tab="suspects">Suspects</button>
+            <button class="tab-btn" data-tab="logs">Evidence log</button>
+          </div>
+
+          <!-- WEAPON FEEDS -->
+          <div class="tab-panel" id="tab-weapons">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+              <div class="grid-size-control" id="weaponGridSize">
+                <span>Grid size</span>
+                <button type="button" class="gs-btn" data-cols="1">1</button>
+                <button type="button" class="gs-btn" data-cols="2">2</button>
+                <button type="button" class="gs-btn" data-cols="3">3</button>
+                <button type="button" class="gs-btn" data-cols="4">4</button>
+              </div>
+            </div>
+            <div class="feed-grid" id="weaponFeedGrid">
+              <div class="panel"><div class="empty-state">Add a camera on the left to see its live, annotated feed here.</div></div>
+            </div>
+          </div>
+
+          <!-- SUSPECTS -->
+          <div class="tab-panel" id="tab-suspects" style="display:none;">
+            <div class="panel">
+              <div class="panel-title" style="display:flex;align-items:center;justify-content:space-between;">
+                <span>Suspect snapshots</span>
+                <button id="clearEvidenceBtn" class="btn small danger" type="button">Clear all evidence</button>
+              </div>
+              <div class="snap-grid" id="snapGrid"><div class="empty-state">No suspects logged yet.</div></div>
+            </div>
+          </div>
+
+          <!-- LOGS -->
+          <div class="tab-panel" id="tab-logs" style="display:none;">
+            <div class="panel" style="margin-bottom:18px;">
+              <div class="panel-title">Live alerts</div>
+              <div class="alert-list" id="alertList"><div class="empty-state">No alerts yet.</div></div>
+            </div>
+            <div class="panel">
+              <div class="panel-title">Full evidence log</div>
+              <div style="overflow-x:auto;">
+                <table>
+                  <thead><tr><th>Time</th><th>Event</th><th>Weapon</th><th>Camera</th><th>Similarity</th></tr></thead>
+                  <tbody id="logsTableBody"><tr><td colspan="5" class="empty-state">No entries yet.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="common.js"></script>
+<script src="weapon.js"></script>
+</body>
+</html>
